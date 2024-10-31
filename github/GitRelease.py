@@ -87,6 +87,7 @@ class GitRelease(CompletableGithubObject):
         self._draft: Attribute[bool] = NotSet
         self._prerelease: Attribute[bool] = NotSet
         self._generate_release_notes: Attribute[bool] = NotSet
+        self._make_latest: Attribute[str] = NotSet
         self._author: Attribute[github.NamedUser.NamedUser] = NotSet
         self._url: Attribute[str] = NotSet
         self._upload_url: Attribute[str] = NotSet
@@ -109,6 +110,11 @@ class GitRelease(CompletableGithubObject):
     def body(self) -> str:
         self._completeIfNotSet(self._body)
         return self._body.value
+
+    @property
+    def make_latest(self):
+        self._completeIfNotSet(self._make_latest)
+        return self._make_latest
 
     @property
     def title(self) -> str:
@@ -216,7 +222,7 @@ class GitRelease(CompletableGithubObject):
             "name": name,
             "body": message,
             "draft": draft,
-            "prerelease": prerelease,
+            "prerelease": prerelease
         }
         # Do not set target_commitish to self.target_commitish when omitted, just don't send it
         # altogether in that case, in order to match the Github API behaviour. Only send it when set.
@@ -319,6 +325,8 @@ class GitRelease(CompletableGithubObject):
             self._prerelease = self._makeBoolAttribute(attributes["prerelease"])
         if "generate_release_notes" in attributes:
             self._generate_release_notes = self._makeBoolAttribute(attributes["generate_release_notes"])
+        if "make_latest" in attributes:
+            self._make_latest = self._makeStringAttribute(attributes["make_latest"])
         if "author" in attributes:
             self._author = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["author"])
         if "url" in attributes:

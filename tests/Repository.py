@@ -407,15 +407,18 @@ class Repository(Framework.TestCase):
 
     def testCreateGitRelease(self):
         release = self.repo.create_git_release(
-            "vX.Y.Z-by-PyGithub-acctest",
-            "vX.Y.Z: PyGithub acctest",
-            "This release is created by PyGithub",
+            tag="vX.Y.Z-by-PyGithub-acctest",
+            name="vX.Y.Z: PyGithub acctest",
+            message="This release is created by PyGithub",
+            make_latest="false"
         )
+
         self.assertEqual(release.tag_name, "vX.Y.Z-by-PyGithub-acctest")
         self.assertEqual(release.title, "vX.Y.Z: PyGithub acctest")
         self.assertEqual(release.body, "This release is created by PyGithub")
         self.assertEqual(release.draft, False)
         self.assertEqual(release.prerelease, False)
+
 
     def testCreateGitReleaseGenerateReleaseNotes(self):
         release = self.repo.create_git_release("vX.Y.Z-by-PyGithub-acctest-release-notes", generate_release_notes=True)
@@ -431,6 +434,7 @@ class Repository(Framework.TestCase):
             False,
             True,
             False,
+            "false"
             "da9a285fd8b782461e56cba39ae8d2fa41ca7cdc",
         )
         self.assertEqual(release.tag_name, "vX.Y.Z-by-PyGithub-acctest2")
