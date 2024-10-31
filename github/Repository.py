@@ -1264,6 +1264,7 @@ class Repository(CompletableGithubObject):
         draft: bool = False,
         prerelease: bool = False,
         generate_release_notes: bool = False,
+        make_latest: Opt[str] = NotSet,
     ) -> GitRelease:
         """
         Convenience function that calls :meth:`Repository.create_git_tag` and :meth:`Repository.create_git_release`.
@@ -1278,6 +1279,7 @@ class Repository(CompletableGithubObject):
         :param draft: bool
         :param prerelease: bool
         :param generate_release_notes: bool
+        :param make_latest: Opt[str]
         :rtype: :class:`github.GitRelease.GitRelease`
 
         """
@@ -1289,6 +1291,7 @@ class Repository(CompletableGithubObject):
             draft,
             prerelease,
             generate_release_notes,
+            make_latest,
             target_commitish=object,
         )
 
@@ -1300,6 +1303,7 @@ class Repository(CompletableGithubObject):
         draft: bool = False,
         prerelease: bool = False,
         generate_release_notes: bool = False,
+        make_latest: Opt[str] = NotSet,
         target_commitish: Opt[str] = NotSet,
     ) -> GitRelease:
         """
@@ -1310,6 +1314,7 @@ class Repository(CompletableGithubObject):
         :param draft: bool
         :param prerelease: bool
         :param generate_release_notes: bool
+        :param make_latest: Opt[str]
         :param target_commitish: string or :class:`github.Branch.Branch` or :class:`github.Commit.Commit` or :class:`github.GitCommit.GitCommit`
         :rtype: :class:`github.GitRelease.GitRelease`
         """
@@ -1318,6 +1323,7 @@ class Repository(CompletableGithubObject):
         assert isinstance(name, str) or generate_release_notes and is_optional(name, str), name
         assert isinstance(message, str) or generate_release_notes and is_optional(message, str), message
         assert isinstance(draft, bool), draft
+        assert make_latest in ["true", "false", "legacy", NotSet], make_latest
         assert isinstance(prerelease, bool), prerelease
         assert is_optional(
             target_commitish,
@@ -1327,12 +1333,15 @@ class Repository(CompletableGithubObject):
             "tag_name": tag,
             "draft": draft,
             "prerelease": prerelease,
-            "generate_release_notes": generate_release_notes,
+            "generate_release_notes": generate_release_notes
         }
+
         if is_defined(name):
             post_parameters["name"] = name
         if is_defined(message):
             post_parameters["body"] = message
+        if is_defined(make_latest):
+            post_parameters["make_latest"] = make_latest
         if isinstance(target_commitish, str):
             post_parameters["target_commitish"] = target_commitish
         elif isinstance(target_commitish, github.Branch.Branch):
@@ -4437,3 +4446,6 @@ class Repository(CompletableGithubObject):
             self._watchers_count = self._makeIntAttribute(attributes["watchers_count"])
         if "web_commit_signoff_required" in attributes:  # pragma no branch
             self._web_commit_signoff_required = self._makeBoolAttribute(attributes["web_commit_signoff_required"])
+
+
+
